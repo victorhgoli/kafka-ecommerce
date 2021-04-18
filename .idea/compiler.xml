@@ -7,9 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="service-log" />
+        <module name="service-http-ecommerce" />
         <module name="common-kafka" />
-        <module name="service-fraud-detector" />
         <module name="service-new-order" />
+        <module name="service-reading-report" />
+        <module name="service-Users" />
+        <module name="service-fraud-detector" />
         <module name="service-email" />
       </profile>
     </annotationProcessing>
@@ -19,8 +22,19 @@
       <module name="service" target="11" />
       <module name="service-email" target="11" />
       <module name="service-fraud-detector" target="11" />
+      <module name="service-http-ecommerce" target="11" />
       <module name="service-log" target="11" />
       <module name="service-new-order" target="11" />
+      <module name="service-reading-report" target="11" />
+      <module name="service-Users" target="11" />
+      <module name="service-users" target="11" />
+      <module name="teste" target="11" />
+      <module name="untitled" target="11" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="service-http-ecommerce" options="-parameters" />
+    </option>
   </component>
 </project>

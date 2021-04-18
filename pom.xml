@@ -13,6 +13,15 @@
       <module>service-log</module>
       <module>service-new-order</module>
       <module>common-kafka</module>
+      <module>service-users</module>
+        <module>service-http-ecommerce</module>
+        <module>service-reading-report</module>
+        <module>service-users</module>
+      <module>service-users</module>
+      <module>teste</module>
+        <module>service-users</module>
+      <module>untitled</module>
+      <module>service-Users</module>
     </modules>
 
     <name>kakfa-ecommerce</name>
