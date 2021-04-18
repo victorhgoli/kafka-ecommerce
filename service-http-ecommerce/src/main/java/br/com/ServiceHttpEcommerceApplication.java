@@ -12,10 +12,5 @@ public class ServiceHttpEcommerceApplication {
 	}
 
 
-	@Bean
-	public KafkaDispatcher dispatcher(){
-		return new KafkaDispatcher();
-	}
-
 
 }

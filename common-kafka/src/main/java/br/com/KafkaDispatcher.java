@@ -12,13 +12,14 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 public class KafkaDispatcher<T> implements Closeable {
 
-    private KafkaProducer<String, T> producer;
+    private final KafkaProducer<String, Message<T>> producer;
 
     public KafkaDispatcher() {
-        this.producer = new KafkaProducer<String, T>(properties());
+        this.producer = new KafkaProducer<String, Message<T>>(properties());
     }
 
-    public void send(String topic, String key, T value) throws InterruptedException, ExecutionException {
+    public void send(String topic, String key, CorrelationId id, T payload) throws InterruptedException, ExecutionException {
+        var value = new Message<T>(id, payload);
         Callback callback = (data, ex) -> {
             if (ex != null) {
                 ex.printStackTrace();

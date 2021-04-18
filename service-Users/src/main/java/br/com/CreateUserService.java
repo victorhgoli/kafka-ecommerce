@@ -40,10 +40,10 @@ public class CreateUserService {
     }
 
 
-    private void parse(ConsumerRecord<String, Order> record) throws SQLException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws SQLException {
         System.out.println("Processing new Order, check for new user:" + record.value());
 
-        var order = record.value();
+        var order = record.value().getPayload();
 
         if (isNewUser(order.getEmail())) {
             insertNewUser(order.getEmail());
@@ -53,7 +53,7 @@ public class CreateUserService {
     }
 
     private void insertNewUser(String email) throws SQLException {
-        var insert = connection.prepareStatement("insert into Users (uuid, email) values (?m?)");
+        var insert = connection.prepareStatement("insert into Users (uuid, email) values (?, ?)");
 
         insert.setString(1, UUID.randomUUID().toString());
         insert.setString(2, email);

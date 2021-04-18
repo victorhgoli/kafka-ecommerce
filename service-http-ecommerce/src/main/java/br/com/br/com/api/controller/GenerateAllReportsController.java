@@ -1,5 +1,6 @@
 package br.com.br.com.api.controller;
 
+import br.com.CorrelationId;
 import br.com.KafkaDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +15,15 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/admin/generate-reports")
 public class GenerateAllReportsController {
 
-    @Autowired
-    private KafkaDispatcher<String> batchDispatcher;
+    private KafkaDispatcher<String> batchDispatcher = new KafkaDispatcher<>();
 
     @GetMapping
     public ResponseEntity<?> generateAllReports() {
 
         try {
-            batchDispatcher.send("SEND_MESSAGE_TO_ALL_USERS", "USER_GENERATE_READING_REPORT", "USER_GENERATE_READING_REPORT");
+            batchDispatcher.send("ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS", "ECOMMERCE_USER_GENERATE_READING_REPORT",
+                    new CorrelationId(GenerateAllReportsController.class.getSimpleName()),
+                    "ECOMMERCE_USER_GENERATE_READING_REPORT");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
