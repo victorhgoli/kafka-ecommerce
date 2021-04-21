@@ -22,6 +22,8 @@
         <module>service-users</module>
       <module>untitled</module>
       <module>service-Users</module>
+        <module>service-email-new-order</module>
+      <module>common-database</module>
     </modules>
 
     <name>kakfa-ecommerce</name>

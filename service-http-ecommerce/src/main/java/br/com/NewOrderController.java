@@ -1,16 +1,16 @@
-package br.com.br.com.api.controller;
+package br.com;
 
-import br.com.CorrelationId;
-import br.com.KafkaDispatcher;
-import br.com.br.com.api.model.Order;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.br.com.api.OrdersDataBase;
+import br.com.dispatcher.KafkaDispatcher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -19,10 +19,9 @@ import java.util.concurrent.ExecutionException;
 public class NewOrderController {
 
     private KafkaDispatcher orderDispatcher = new KafkaDispatcher<Order>();
-    private KafkaDispatcher emailDispatcher = new KafkaDispatcher<String>();
 
     @GetMapping
-    public void newOrder(@RequestParam String email, @RequestParam BigDecimal amount) throws ExecutionException, InterruptedException {
+    public void newOrder(@RequestParam String email, @RequestParam BigDecimal amount) throws ExecutionException, InterruptedException, SQLException {
 
         // var userId = UUID.randomUUID().toString();
         var orderId = UUID.randomUUID().toString();
@@ -30,15 +29,20 @@ public class NewOrderController {
         //var email = Math.random() + "@email.com";
 
         var order = new Order(orderId, amount, email);
-        System.out.println(order);
-        orderDispatcher.send("ECOMMERCE_NEW_ORDER", email,
-                new CorrelationId(NewOrderController.class.getSimpleName()),
-                order);
 
-        var emailCode = "isso será um email de envio de ordem!";
-        emailDispatcher.send("ECOMMERCE_SEND_EMAIL", email,
-                new CorrelationId(NewOrderController.class.getSimpleName()),
-                emailCode);
+        try (var database = new OrdersDataBase();) {
+            if (database.saveNew(order)) {
+                System.out.println("New order recivied" + order);
+                System.out.println(order);
+                orderDispatcher.send("ECOMMERCE_NEW_ORDER", email,
+                        new CorrelationId(NewOrderController.class.getSimpleName()),
+                        order);
+            } else {
+                System.out.println("Old order recivied" + order);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @PreDestroy

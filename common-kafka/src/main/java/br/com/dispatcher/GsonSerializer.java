@@ -1,5 +1,7 @@
-package br.com;
+package br.com.dispatcher;
 
+import br.com.Message;
+import br.com.MessageAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

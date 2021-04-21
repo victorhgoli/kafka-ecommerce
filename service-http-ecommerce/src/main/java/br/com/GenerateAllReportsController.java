@@ -1,14 +1,11 @@
-package br.com.br.com.api.controller;
+package br.com;
 
-import br.com.CorrelationId;
-import br.com.KafkaDispatcher;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.dispatcher.KafkaDispatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutionException;
 
 @RestController

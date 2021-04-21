@@ -1,13 +1,13 @@
-package br.com;
+package br.com.dispatcher;
 
 import java.io.Closeable;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import br.com.CorrelationId;
+import br.com.Message;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class KafkaDispatcher<T> implements Closeable {
@@ -19,7 +19,12 @@ public class KafkaDispatcher<T> implements Closeable {
     }
 
     public void send(String topic, String key, CorrelationId id, T payload) throws InterruptedException, ExecutionException {
-        var value = new Message<T>(id, payload);
+        Future<RecordMetadata> future = sendAsync(topic, key, id, payload);
+        future.get();
+    }
+
+    public Future<RecordMetadata> sendAsync(String topic, String key, CorrelationId id, T payload) {
+        var value = new Message<T>(id.continueWith("_" + topic), payload);
         Callback callback = (data, ex) -> {
             if (ex != null) {
                 ex.printStackTrace();
@@ -31,7 +36,8 @@ public class KafkaDispatcher<T> implements Closeable {
         };
 
         var record = new ProducerRecord<>(topic, key, value);
-        producer.send(record, callback).get();
+        var future = producer.send(record, callback);
+        return future;
     }
 
     private static Properties properties() {
@@ -45,7 +51,7 @@ public class KafkaDispatcher<T> implements Closeable {
     }
 
     @Override
-    public void close()  {
+    public void close() {
         producer.close();
     }
 

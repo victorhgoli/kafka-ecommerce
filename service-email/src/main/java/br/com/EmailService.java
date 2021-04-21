@@ -1,29 +1,33 @@
 package br.com;
 
-import java.util.Map;
-
+import br.com.consumer.ConsumerService;
+import br.com.consumer.ServiceRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public class EmailService {
+public class EmailService implements ConsumerService<String> {
 
     public static void main(String[] args) {
-        var emailService = new EmailService();
-        try (var service = new KafkaService(EmailService.class.getSimpleName(), "ECOMMERCE_SEND_EMAIL",
-                emailService::parse,
-                String.class,
-                Map.of());) {
-            service.run();
-        }
-
+        new ServiceRunner(EmailService::new).start(5);
     }
 
-    private void parse(ConsumerRecord<String, String> record) {
+    @Override
+    public String getTopic() {
+        return "ECOMMERCE_SEND_EMAIL";
+    }
+
+    @Override
+    public String getConsumerGroup() {
+        return EmailService.class.getSimpleName();
+    }
+
+
+    public void parse(ConsumerRecord<String, Message<String>> record) {
         System.out.println("Sending email");
         System.out.println(record.key());
         System.out.println(record.value());
         System.out.println(record.partition());
         System.out.println(record.offset());
-        
+
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
